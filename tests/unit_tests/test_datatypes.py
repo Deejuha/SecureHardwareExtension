@@ -1,4 +1,6 @@
-from datatypes import SecurityFlags, she_bytes
+from datatypes import (MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags,
+                       she_bytes)
+from key_slots.autosar import AutosarKeySlots
 from pytest import fixture, mark, raises
 
 
@@ -104,3 +106,182 @@ def test_security_flags_clear_fid(security_flags, flags_to_clear, expected_fid):
 def test_security_flags_typeerror(security_flags, value):
     with raises(TypeError):
         security_flags.write_protection = value
+
+
+@mark.parametrize(
+    "new_key, auth_key, new_key_id, auth_key_id, counter, uid, flags",
+    (
+        ("0" * 32, "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags()),
+        # new_key
+        ("F" * 32, "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags()),
+        (bytes.fromhex("0" * 32), "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags()),
+        # auth_key
+        ("0" * 32, "F" * 32, 0, 0, 0, "0" * 30, SecurityFlags()),
+        ("0" * 32, bytes.fromhex("0" * 32), 0, 0, 0, "0" * 30, SecurityFlags()),
+        # new_key_id
+        ("0" * 32, "0" * 32, 0xFFFFFFFF, 0, 0, "0" * 30, SecurityFlags()),
+        ("0" * 32, "0" * 32, AutosarKeySlots.BOOT_MAC, 0, 0, "0" * 30, SecurityFlags()),
+        # auth_key_id
+        ("0" * 32, "0" * 32, 0, 0xFFFFFFFF, 0, "0" * 30, SecurityFlags()),
+        ("0" * 32, "0" * 32, 0, AutosarKeySlots.BOOT_MAC, 0, "0" * 30, SecurityFlags()),
+        # counter
+        ("0" * 32, "0" * 32, 0, 0, 268435455, "0" * 30, SecurityFlags()),
+        # uid
+        ("0" * 32, "0" * 32, 0, 0, 0, "F" * 30, SecurityFlags()),
+        ("0" * 32, "0" * 32, 0, 0, 0, bytes.fromhex("0" * 30), SecurityFlags()),
+    ),
+)
+def test_update_info_no_exception_raised(
+    new_key, auth_key, new_key_id, auth_key_id, counter, uid, flags
+):
+    MemoryUpdateInfo(
+        new_key=new_key,
+        auth_key=auth_key,
+        new_key_id=new_key_id,
+        auth_key_id=auth_key_id,
+        counter=counter,
+        uid=uid,
+        flags=flags,
+    )
+
+
+@mark.parametrize(
+    "new_key, auth_key, new_key_id, auth_key_id, counter, uid, flags, errortype",
+    (
+        # new_key
+        ("0" * 34, "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("", "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        (bytes(), "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("000", "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("ZZ", "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        (2.5, "0" * 32, 0, 0, 0, "0" * 30, SecurityFlags(), TypeError),
+        # auth_key
+        ("0" * 32, "0" * 34, 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, "", 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, bytes(), 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, "000", 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, "ZZ", 0, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, 2.5, 0, 0, 0, "0" * 30, SecurityFlags(), TypeError),
+        # new_key_id
+        ("0" * 32, "0" * 32, -1, 0, 0, "0" * 30, SecurityFlags(), ValueError),
+        (
+            "0" * 32,
+            "0" * 32,
+            0xFFFFFFFF + 1,
+            0,
+            0,
+            "0" * 30,
+            SecurityFlags(),
+            ValueError,
+        ),
+        ("0" * 32, "0" * 32, "string", 0, 0, "0" * 30, SecurityFlags(), TypeError),
+        # auth_key_id
+        ("0" * 32, "0" * 32, 0, -1, 0, "0" * 30, SecurityFlags(), ValueError),
+        (
+            "0" * 32,
+            "0" * 32,
+            0,
+            0xFFFFFFFF + 1,
+            0,
+            "0" * 30,
+            SecurityFlags(),
+            ValueError,
+        ),
+        ("0" * 32, "0" * 32, 0, "string", 0, "0" * 30, SecurityFlags(), TypeError),
+        # counter
+        ("0" * 32, "0" * 32, 0, 0, -1, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, 268435456, "0" * 30, SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, "string", "0" * 30, SecurityFlags(), TypeError),
+        # uid
+        ("0" * 32, "0" * 32, 0, 0, 0, "0" * 32, SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, 0, "", SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, 0, "000", SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, 0, "ZZ", SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, 0, bytes(), SecurityFlags(), ValueError),
+        ("0" * 32, "0" * 32, 0, 0, 0, 2.5, SecurityFlags(), TypeError),
+    ),
+)
+def test_update_info_raises(
+    new_key, auth_key, new_key_id, auth_key_id, counter, uid, flags, errortype
+):
+    with raises(errortype):
+        MemoryUpdateInfo(
+            new_key=new_key,
+            auth_key=auth_key,
+            new_key_id=new_key_id,
+            auth_key_id=auth_key_id,
+            counter=counter,
+            uid=uid,
+            flags=flags,
+        )
+
+
+@mark.parametrize(
+    "m1, m2, m3, m4, m5",
+    (
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 16),
+        # m1
+        ("FF" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 16),
+        (bytes.fromhex("00" * 16), "00" * 32, "00" * 16, "00" * 32, "00" * 16),
+        # m2
+        ("00" * 16, "FF" * 32, "00" * 16, "00" * 32, "00" * 16),
+        ("00" * 16, bytes.fromhex("00" * 32), "00" * 16, "00" * 32, "00" * 16),
+        # m3
+        ("00" * 16, "00" * 32, "FF" * 16, "00" * 32, "00" * 16),
+        ("00" * 16, "00" * 32, bytes.fromhex("00" * 16), "00" * 32, "00" * 16),
+        # m4
+        ("00" * 16, "00" * 32, "00" * 16, "FF" * 32, "00" * 16),
+        ("00" * 16, "00" * 32, "00" * 16, bytes.fromhex("00" * 32), "00" * 16),
+        # m5
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "FF" * 16),
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, bytes.fromhex("00" * 16)),
+    ),
+)
+def test_update_messages_no_exception_raised(m1, m2, m3, m4, m5):
+    MemoryUpdateMessages(m1=m1, m2=m2, m3=m3, m4=m4, m5=m5)
+
+
+@mark.parametrize(
+    "m1, m2, m3, m4, m5, errortype",
+    (
+        # ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        # m1
+        ("00" * 18, "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("000", "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("ZZ", "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("", "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        (bytes(), "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        (2.5, "00" * 32, "00" * 16, "00" * 32, "00" * 16, TypeError),
+        # m2
+        ("00" * 16, "00" * 34, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "000", "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "ZZ", "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "", "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, bytes(), "00" * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, 2.5, "00" * 16, "00" * 32, "00" * 16, TypeError),
+        # m3
+        ("00" * 16, "00" * 32, "00" * 18, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "000", "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "ZZ" * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "", "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, bytes() * 16, "00" * 32, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, 2.5, "00" * 32, "00" * 16, TypeError),
+        # m4
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 34, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "000", "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "ZZ", "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "", "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, bytes() * 32, "00" * 16, ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, 2.5, "00" * 16, TypeError),
+        # m5
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 18, ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "000", ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "ZZ", ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "", ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, bytes(), ValueError),
+        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, 2.5, TypeError),
+    ),
+)
+def test_update_messages_raises(m1, m2, m3, m4, m5, errortype):
+    with raises(errortype):
+        MemoryUpdateMessages(m1=m1, m2=m2, m3=m3, m4=m4, m5=m5)
