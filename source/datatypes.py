@@ -25,11 +25,14 @@ class she_bytes(bytes):
         -------
         `bytes`
             Result of XOR.
+
         """
+        if len(self) != len(other):
+            raise ValueError("Cannot XOR bytes with different lengths.")
         return bytes(x ^ y for x, y in zip(self, other))
 
 
-class SecurityFlag(object):
+class SecurityFlag:
     def __set_name__(self, owner, name):
         self._attribute_name = name
 
@@ -50,12 +53,12 @@ class SecurityFlag(object):
 
 
 class SecurityFlags:
-    write_protection = SecurityFlag(0)
-    boot_failure = SecurityFlag(1)
-    debugger_activation = SecurityFlag(2)
-    wildcard_usage = SecurityFlag(3)
-    key_usage = SecurityFlag(4)
-    plain_key = SecurityFlag(5)
+    write_protection: bool = SecurityFlag(0)
+    boot_failure: bool = SecurityFlag(1)
+    debugger_activation: bool = SecurityFlag(2)
+    wildcard_usage: bool = SecurityFlag(3)
+    key_usage: bool = SecurityFlag(4)
+    plain_key: bool = SecurityFlag(5)
 
     def __init__(self):
         self._fid: int = 0

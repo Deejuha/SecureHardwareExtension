@@ -26,6 +26,13 @@ def test_bytes_xor(a, b, expected):
     assert bytes_expected == result
 
 
+def test_bytes_different_lengths():
+    bytes_a = she_bytes.fromhex("00")
+    bytes_b = she_bytes.fromhex("FFFF")
+    with raises(ValueError):
+        bytes_a ^ bytes_b
+
+
 @mark.parametrize(
     "flags_to_set, expected_fid",
     (
@@ -93,9 +100,7 @@ def test_security_flags_clear_fid(security_flags, flags_to_clear, expected_fid):
     assert expected_fid == security_flags.fid
 
 
-@mark.parametrize(
-    "value", (1, "string")
-)
+@mark.parametrize("value", (1, "string"))
 def test_security_flags_typeerror(security_flags, value):
     with raises(TypeError):
         security_flags.write_protection = value
