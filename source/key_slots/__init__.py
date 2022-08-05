@@ -1,5 +1,5 @@
 """
-Module for key slot identification.
+Package for key slot identification.
 
 """
-__all__ = ["autosar, base"]
+__all__ = ["autosar", "base"]

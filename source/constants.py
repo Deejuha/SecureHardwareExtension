@@ -1,10 +1,11 @@
 """
-File to keep constants used withinh Secure Hardware Extension.
+Module to keep constants used withinh Secure Hardware Extension.
 
 """
 
 from datatypes import she_bytes
 
+__all__ = ["SheConstants"]
 
 class classproperty(object):
     def __init__(self, fget):

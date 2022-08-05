@@ -1,6 +1,6 @@
 """
-Secure Hardware Extension module.
+Secure Hardware Extension package.
 
 """
 
-__all__ = ["datatypes, memory_update"]
+__all__ = ["constants", "datatypes", "memory_update"]

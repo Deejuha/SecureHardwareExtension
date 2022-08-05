@@ -119,10 +119,10 @@ def test_security_flags_typeerror(security_flags, value):
         ("0" * 32, "F" * 32, 0, 0, 0, "0" * 30, SecurityFlags()),
         ("0" * 32, bytes.fromhex("0" * 32), 0, 0, 0, "0" * 30, SecurityFlags()),
         # new_key_id
-        ("0" * 32, "0" * 32, 0xFFFFFFFF, 0, 0, "0" * 30, SecurityFlags()),
+        ("0" * 32, "0" * 32, 15, 0, 0, "0" * 30, SecurityFlags()),
         ("0" * 32, "0" * 32, AutosarKeySlots.BOOT_MAC, 0, 0, "0" * 30, SecurityFlags()),
         # auth_key_id
-        ("0" * 32, "0" * 32, 0, 0xFFFFFFFF, 0, "0" * 30, SecurityFlags()),
+        ("0" * 32, "0" * 32, 0, 15, 0, "0" * 30, SecurityFlags()),
         ("0" * 32, "0" * 32, 0, AutosarKeySlots.BOOT_MAC, 0, "0" * 30, SecurityFlags()),
         # counter
         ("0" * 32, "0" * 32, 0, 0, 268435455, "0" * 30, SecurityFlags()),
@@ -167,7 +167,7 @@ def test_update_info_no_exception_raised(
         (
             "0" * 32,
             "0" * 32,
-            0xFFFFFFFF + 1,
+            16,
             0,
             0,
             "0" * 30,
@@ -181,7 +181,7 @@ def test_update_info_no_exception_raised(
             "0" * 32,
             "0" * 32,
             0,
-            0xFFFFFFFF + 1,
+            16,
             0,
             "0" * 30,
             SecurityFlags(),

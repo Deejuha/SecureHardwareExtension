@@ -3,7 +3,7 @@ Module contains types using within the project.
 
 """
 
-__all__ = ["MemoryUpdateInfo", "SecurityFlags", "she_bytes"]
+__all__ = ["MemoryUpdateInfo", "MemoryUpdateMessages", "SecurityFlags", "she_bytes"]
 
 from typing import Union
 
@@ -19,7 +19,7 @@ class she_bytes(bytes):
 
     """
 
-    def __xor__(self, other: bytes) -> bytes:
+    def __xor__(self, other):
         """
         Overrides xor operator in order to xor bytes.
 
@@ -36,7 +36,7 @@ class she_bytes(bytes):
         """
         if len(self) != len(other):
             raise ValueError("Cannot XOR bytes with different lengths.")
-        return bytes(x ^ y for x, y in zip(self, other))
+        return she_bytes(x ^ y for x, y in zip(self, other))
 
 
 class SheDescriptor:
@@ -150,8 +150,8 @@ class SecurityFlags:
 class MemoryUpdateInfo:
     new_key: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     auth_key: she_bytes = SheBytes(16 * BITS_IN_BYTE)
-    new_key_id: int = SheKeySlot(4 * BITS_IN_BYTE)
-    auth_key_id: int = SheKeySlot(4 * BITS_IN_BYTE)
+    new_key_id: int = SheKeySlot(4)
+    auth_key_id: int = SheKeySlot(4)
     counter: int = SheInteger(28)
     uid: she_bytes = SheBytes(15 * BITS_IN_BYTE)
     fid: int = SheInteger(5)
