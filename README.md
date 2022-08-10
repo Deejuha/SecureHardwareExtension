@@ -75,6 +75,12 @@ update_protocol.update_info.new_key
 >>> b'\x0f\x0e\r\x0c\x0b\n\t\x08\x07\x06\x05\x04\x03\x02\x01\x0
 ```
 
+## Sources
+
+[Autosar specification](https://www.autosar.org/fileadmin/user_upload/standards/foundation/19-11/AUTOSAR_TR_SecureHardwareExtensions.pdf)
+[NXP application note](https://www.nxp.com/docs/en/application-note/AN4234.pdf)
+[Vector SHE Key Update Protocol](https://support.vector.com/sys_attachment.do?sys_id=534d25eb87548590b9f233770cbb3550)
+
 ## Somewhen in the future, depends on the repo stars quantity
 
 - Commandline interface
