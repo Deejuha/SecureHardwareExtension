@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  PYTHONPATH: ./source:./tests
+
 permissions:
   contents: read
 
