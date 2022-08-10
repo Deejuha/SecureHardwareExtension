@@ -1,5 +1,5 @@
 """
-Module to keep constants used withinh Secure Hardware Extension.
+Module to keep constants used within Secure Hardware Extension.
 
 """
 
@@ -7,7 +7,13 @@ from datatypes import she_bytes
 
 __all__ = ["SheConstants"]
 
-class classproperty(object):
+
+class classproperty:
+    """
+    Class helpful in order to hold constant values.
+
+    """
+
     def __init__(self, fget):
         self.fget = fget
 
@@ -16,6 +22,13 @@ class classproperty(object):
 
 
 class SheConstants:
+    """
+    Class holds constants used within SHE.
+    https://www.autosar.org/fileadmin/user_upload/standards/foundation/19-11/AUTOSAR_TR_SecureHardwareExtensions.pdf
+    4.12 Constants used with SHE.
+
+    """
+
     @classproperty
     def KEY_UPDATE_ENC_C(cls):
         return she_bytes.fromhex("010153484500800000000000000000B0")

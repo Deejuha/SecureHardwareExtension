@@ -33,6 +33,11 @@ class she_bytes(bytes):
         `bytes`
             Result of XOR.
 
+        Raises
+        ------
+        `ValueError`
+            When bytes to XOR has different length.
+
         """
         if len(self) != len(other):
             raise ValueError("Cannot XOR bytes with different lengths.")
@@ -40,6 +45,11 @@ class she_bytes(bytes):
 
 
 class SheDescriptor:
+    """
+    Base descriptor to be used in SHE datatypes.
+
+    """
+
     def __set_name__(self, owner, name):
         self._attribute_name = name
 
@@ -51,6 +61,11 @@ class SheDescriptor:
 
 
 class SheBytes(SheDescriptor):
+    """
+    Descriptor to be used to validate and utilize she_bytes type within SHE datatypes.
+
+    """
+
     def __set__(self, obj, value):
         if isinstance(value, str):
             if not value:
@@ -85,6 +100,11 @@ class SheBytes(SheDescriptor):
 
 
 class SheInteger(SheDescriptor):
+    """
+    Descriptor to be used to validate and utilize integer type within SHE datatypes.
+
+    """
+
     def __set__(self, obj, value):
         if not isinstance(value, int):
             raise TypeError(
@@ -103,6 +123,11 @@ class SheInteger(SheDescriptor):
 
 
 class SheKeySlot(SheInteger):
+    """
+    Descriptor to be used to validate and utilize KeySlots type within SHE datatypes.
+
+    """
+
     def __set__(self, obj, setter_value):
         if isinstance(setter_value, KeySlots):
             setter_value = setter_value.value
@@ -110,6 +135,11 @@ class SheKeySlot(SheInteger):
 
 
 class SecurityFlag(SheDescriptor):
+    """
+    Descriptor to be used to validate and utilize SecurityFlags type within SHE datatypes.
+
+    """
+
     def __init__(self, bit_index: int):
         self._bit_index = bit_index
 
@@ -122,11 +152,29 @@ class SecurityFlag(SheDescriptor):
             obj._fid = obj._fid | (1 << self._bit_index)
         else:
             obj._fid = obj._fid & ~(1 << self._bit_index)
-    
+
     def __get__(self, obj, objtype=None):
         return bool(obj._fid & (1 << self._bit_index))
 
+
 class SecurityFlags:
+    """
+    Class holds Secure Hardware Extension flags (FID).
+
+    Examples
+    --------
+    >>> flags = SecurityFlags()
+    >>> flags.write_protection = True
+    >>> flags.fid
+        32
+    >>> another_flags = SecurityFlags(fid=20)
+    >>> another_flags.wildcard
+        False
+    >>> another_flags.boot_protection
+        True
+
+    """
+
     write_protection: bool = SecurityFlag(5)
     boot_protection: bool = SecurityFlag(4)
     debugger_protection: bool = SecurityFlag(3)
@@ -134,16 +182,51 @@ class SecurityFlags:
     wildcard: bool = SecurityFlag(1)
     cmac_usage: bool = SecurityFlag(0)
 
-    def __init__(self, fid:Optional[int] = None):
+    def __init__(self, fid: Optional[int] = None) -> None:
+        """
+        Initializes flags.
+
+        Parameters
+        ----------
+        fid : `int`, optional
+            Integer representation of chosen bit flags.
+
+        """
         self._fid = 0
         self.fid = fid if fid else 0
 
     @property
-    def fid(self):
+    def fid(self) -> int:
+        """
+        Property of fid.
+
+        Returns
+        -------
+        `int`
+            Integer representation of chosen bit flags.
+
+        """
         return self._fid
 
     @fid.setter
-    def fid(self, value:int) -> None:
+    def fid(self, value: int) -> None:
+        """
+        Sets flags accordingly to chosen fid integer value.
+
+        Parameters
+        ----------
+        value : `int`
+            Integer representation of chosen bit flags.
+
+        Raises
+        ------
+        `TypeError`
+            When improper type will be set.
+
+        `ValueError`
+            When fid has improper integer value.
+
+        """
         if not isinstance(value, int):
             raise TypeError(f"fid shall be type of int. Type given: {type(value)}")
         if not 0 <= value <= 63:
@@ -157,6 +240,23 @@ class SecurityFlags:
 
 
 class MemoryUpdateInfo:
+    """
+    Class holds SHE update protocol required information.
+
+    Examples
+    --------
+    >>> MemoryUpdateInfo(
+            new_key="0f0e0d0c0b0a09080706050403020100",
+            auth_key="000102030405060708090a0b0c0d0e0f",
+            new_key_id=4,
+            auth_key_id=1,
+            counter=1,
+            uid="00" * 15,
+            flags=SecurityFlags(),
+        )
+
+    """
+
     new_key: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     auth_key: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     new_key_id: int = SheKeySlot(4)
@@ -175,7 +275,34 @@ class MemoryUpdateInfo:
         counter: int,
         uid: HexType,
         flags: SecurityFlags,
-    ):
+    ) -> None:
+        """
+        Initializes class with necessary items.
+
+        Parameters
+        ----------
+        new_key : `HexType`
+            Key which shall be updated (128bits).
+
+        auth_key : `HexType`
+            Key which shall be used for authentication (128bits).
+
+        new_key_id : `Union` [`KeySlots`, `int`]
+            Key slot of key to update.
+
+        auth_key_id : `Union` [`KeySlots`, `int`]
+            Key slot of authentication key.
+
+        counter : `int`
+            Counter of update operations.
+
+        uid : `HexType`
+            Unique Identification Identifier (120bits).
+
+        flags : `SecurityFlags`
+            Flags to select key parameters.
+
+        """
         self.new_key = new_key
         self.auth_key = auth_key
         self.new_key_id = new_key_id
@@ -186,11 +313,34 @@ class MemoryUpdateInfo:
         self.fid = flags.fid
 
     @property
-    def flags(self):
+    def flags(self) -> SecurityFlags:
+        """
+        Getter of flags.
+
+        Returns
+        -------
+        `SecurityFlags`
+            Properties of key slot.
+
+        """
         return self._flags
 
     @flags.setter
-    def flags(self, flags):
+    def flags(self, flags: SecurityFlags) -> None:
+        """
+        Validates and sets flags.
+
+        Parameters
+        ----------
+        flags : `SecurityFlags`
+            Value of setter.
+
+        Raises
+        ------
+        `TypeError`
+            When setter value won't be as specified.
+
+        """
         if not isinstance(flags, SecurityFlags):
             raise TypeError(
                 f"Memory Update Info flags attribute shall be type of {type(SecurityFlags)}."
@@ -200,11 +350,31 @@ class MemoryUpdateInfo:
 
 
 class MemoryUpdateMessages:
+    """
+    Class holds information about messages which may be used to get memory update info.
+
+    """
+
     auth_key: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     M1: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     M2: she_bytes = SheBytes(32 * BITS_IN_BYTE)
 
     def __init__(self, auth_key: HexType, m1: HexType, m2: HexType):
+        """
+        Initializes necessary properties.
+
+        Parameters
+        ----------
+        auth_key : `HexType`
+            Key used for authentication of messages M1 and M2.
+
+        m1 : `HexType`
+            SHE M1 message.
+
+        m2 : `HexType`
+            SHE M2 message.
+
+        """
         self.auth_key = auth_key
         self.M1 = m1
         self.M2 = m2
