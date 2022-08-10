@@ -11,6 +11,7 @@ from Crypto.Hash import CMAC
 from constants import SheConstants
 from datatypes import MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags, she_bytes
 
+__all__ = ["MemoryUpdateProtocol"]
 
 class MemoryUpdateProtocol:
     """

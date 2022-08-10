@@ -1,5 +1,3 @@
-from distutils.log import error
-from typing import Type
 from datatypes import MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags, she_bytes
 from key_slots.autosar import AutosarKeySlots
 from pytest import fixture, mark, raises
