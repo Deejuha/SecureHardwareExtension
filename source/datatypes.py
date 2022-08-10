@@ -5,7 +5,7 @@ Module contains types using within the project.
 
 __all__ = ["MemoryUpdateInfo", "MemoryUpdateMessages", "SecurityFlags", "she_bytes"]
 
-from typing import Union
+from typing import Optional, Union
 
 from key_slots.base import KeySlots
 
@@ -122,29 +122,38 @@ class SecurityFlag(SheDescriptor):
             obj._fid = obj._fid | (1 << self._bit_index)
         else:
             obj._fid = obj._fid & ~(1 << self._bit_index)
-        setattr(obj, f"_{self._attribute_name}", value)
-
+    
+    def __get__(self, obj, objtype=None):
+        return bool(obj._fid & (1 << self._bit_index))
 
 class SecurityFlags:
-    write_protection: bool = SecurityFlag(0)
-    boot_failure: bool = SecurityFlag(1)
-    debugger_activation: bool = SecurityFlag(2)
-    wildcard_usage: bool = SecurityFlag(3)
-    key_usage: bool = SecurityFlag(4)
-    plain_key: bool = SecurityFlag(5)
+    write_protection: bool = SecurityFlag(5)
+    boot_protection: bool = SecurityFlag(4)
+    debugger_protection: bool = SecurityFlag(3)
+    key_usage: bool = SecurityFlag(2)
+    wildcard: bool = SecurityFlag(1)
+    cmac_usage: bool = SecurityFlag(0)
 
-    def __init__(self):
-        self._fid: int = 0
-        self.write_protection = False
-        self.boot_failure = False
-        self.debugger_activation = False
-        self.wildcard_usage = False
-        self.key_usage = False
-        self.plain_key = False
+    def __init__(self, fid:Optional[int] = None):
+        self._fid = 0
+        self.fid = fid if fid else 0
 
     @property
     def fid(self):
         return self._fid
+
+    @fid.setter
+    def fid(self, value:int) -> None:
+        if not isinstance(value, int):
+            raise TypeError(f"fid shall be type of int. Type given: {type(value)}")
+        if not 0 <= value <= 63:
+            raise ValueError(f"fid shall be between 0 and 63. Value {value} given.")
+        self.write_protection = True if value & 0b100000 else False
+        self.boot_protection = True if value & 0b010000 else False
+        self.debugger_protection = True if value & 0b001000 else False
+        self.key_usage = True if value & 0b000100 else False
+        self.wildcard = True if value & 0b000010 else False
+        self.cmac_usage = True if value & 0b000001 else False
 
 
 class MemoryUpdateInfo:
@@ -191,15 +200,11 @@ class MemoryUpdateInfo:
 
 
 class MemoryUpdateMessages:
+    auth_key: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     M1: she_bytes = SheBytes(16 * BITS_IN_BYTE)
     M2: she_bytes = SheBytes(32 * BITS_IN_BYTE)
-    M3: she_bytes = SheBytes(16 * BITS_IN_BYTE)
-    M4: she_bytes = SheBytes(32 * BITS_IN_BYTE)
-    M5: she_bytes = SheBytes(16 * BITS_IN_BYTE)
 
-    def __init__(self, m1: HexType, m2: HexType, m3: HexType, m4: HexType, m5: HexType):
+    def __init__(self, auth_key: HexType, m1: HexType, m2: HexType):
+        self.auth_key = auth_key
         self.M1 = m1
         self.M2 = m2
-        self.M3 = m3
-        self.M4 = m4
-        self.M5 = m5

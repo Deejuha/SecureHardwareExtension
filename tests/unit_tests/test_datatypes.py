@@ -1,5 +1,6 @@
-from datatypes import (MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags,
-                       she_bytes)
+from distutils.log import error
+from typing import Type
+from datatypes import MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags, she_bytes
 from key_slots.autosar import AutosarKeySlots
 from pytest import fixture, mark, raises
 
@@ -39,20 +40,20 @@ def test_bytes_different_lengths():
     "flags_to_set, expected_fid",
     (
         ((), 0),
-        (("write_protection",), 0b000001),
-        (("boot_failure",), 0b000010),
-        (("debugger_activation",), 0b000100),
-        (("wildcard_usage",), 0b001000),
-        (("key_usage",), 0b010000),
-        (("plain_key",), 0b100000),
+        (("write_protection",), 0b100000),
+        (("boot_protection",), 0b010000),
+        (("debugger_protection",), 0b001000),
+        (("key_usage",), 0b000100),
+        (("wildcard",), 0b000010),
+        (("cmac_usage",), 0b000001),
         (
             (
                 "write_protection",
-                "boot_failure",
-                "debugger_activation",
-                "wildcard_usage",
+                "boot_protection",
+                "debugger_protection",
                 "key_usage",
-                "plain_key",
+                "wildcard",
+                "cmac_usage",
             ),
             0b111111,
         ),
@@ -68,20 +69,20 @@ def test_security_flags_set_fid(security_flags, flags_to_set, expected_fid):
     "flags_to_clear, expected_fid",
     (
         ((), 0b111111),
-        (("write_protection",), 0b111110),
-        (("boot_failure",), 0b111101),
-        (("debugger_activation",), 0b111011),
-        (("wildcard_usage",), 0b110111),
-        (("key_usage",), 0b101111),
-        (("plain_key",), 0b011111),
+        (("write_protection",), 0b011111),
+        (("boot_protection",), 0b101111),
+        (("debugger_protection",), 0b110111),
+        (("key_usage",), 0b111011),
+        (("wildcard",), 0b111101),
+        (("cmac_usage",), 0b111110),
         (
             (
                 "write_protection",
-                "boot_failure",
-                "debugger_activation",
-                "wildcard_usage",
+                "boot_protection",
+                "debugger_protection",
                 "key_usage",
-                "plain_key",
+                "wildcard",
+                "cmac_usage",
             ),
             0b000000,
         ),
@@ -90,11 +91,11 @@ def test_security_flags_set_fid(security_flags, flags_to_set, expected_fid):
 def test_security_flags_clear_fid(security_flags, flags_to_clear, expected_fid):
     for attribute in (
         "write_protection",
-        "boot_failure",
-        "debugger_activation",
-        "wildcard_usage",
+        "boot_protection",
+        "debugger_protection",
         "key_usage",
-        "plain_key",
+        "wildcard",
+        "cmac_usage",
     ):
         setattr(security_flags, attribute, True)
     for flagname in flags_to_clear:
@@ -102,10 +103,44 @@ def test_security_flags_clear_fid(security_flags, flags_to_clear, expected_fid):
     assert expected_fid == security_flags.fid
 
 
+@mark.parametrize(
+    "flag_to_set, fid",
+    (
+        ("write_protection", 32),
+        ("boot_protection", 16),
+        ("debugger_protection", 8),
+        ("key_usage", 4),
+        ("wildcard", 2),
+        ("cmac_usage", 1),
+    ),
+)
+def test_security_flags_set_by_fid(security_flags, flag_to_set, fid):
+    expected_flags = {
+        "write_protection": False,
+        "boot_protection": False,
+        "debugger_protection": False,
+        "key_usage": False,
+        "wildcard": False,
+        "cmac_usage": False,
+    }
+    expected_flags[flag_to_set] = True
+    security_flags.fid = fid
+    for key in expected_flags:
+        assert expected_flags[key] == getattr(security_flags, key)
+
+
 @mark.parametrize("value", (1, "string"))
 def test_security_flags_typeerror(security_flags, value):
     with raises(TypeError):
         security_flags.write_protection = value
+
+
+@mark.parametrize(
+    "fid, errortype", ((-1, ValueError), (64, ValueError), ("***** ***", TypeError))
+)
+def test_security_flags_improper_fid(fid, errortype):
+    with raises(errortype):
+        SecurityFlags(fid=fid)
 
 
 @mark.parametrize(
@@ -217,71 +252,50 @@ def test_update_info_raises(
 
 
 @mark.parametrize(
-    "m1, m2, m3, m4, m5",
+    "auth_key, m1, m2",
     (
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 16),
+        ("00" * 16, "00" * 16, "00" * 32),
+        # auth_key
+        ("FF" * 16, "00" * 16, "00" * 32),
+        (bytes.fromhex("00" * 16), "00" * 16, "00" * 32),
         # m1
-        ("FF" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 16),
-        (bytes.fromhex("00" * 16), "00" * 32, "00" * 16, "00" * 32, "00" * 16),
+        ("00" * 16, "FF" * 16, "00" * 32),
+        ("00" * 16, bytes.fromhex("00" * 16), "00" * 32),
         # m2
-        ("00" * 16, "FF" * 32, "00" * 16, "00" * 32, "00" * 16),
-        ("00" * 16, bytes.fromhex("00" * 32), "00" * 16, "00" * 32, "00" * 16),
-        # m3
-        ("00" * 16, "00" * 32, "FF" * 16, "00" * 32, "00" * 16),
-        ("00" * 16, "00" * 32, bytes.fromhex("00" * 16), "00" * 32, "00" * 16),
-        # m4
-        ("00" * 16, "00" * 32, "00" * 16, "FF" * 32, "00" * 16),
-        ("00" * 16, "00" * 32, "00" * 16, bytes.fromhex("00" * 32), "00" * 16),
-        # m5
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "FF" * 16),
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, bytes.fromhex("00" * 16)),
+        ("00" * 16, "00" * 16, "FF" * 32),
+        ("00" * 16, "00" * 16, bytes.fromhex("00" * 32)),
     ),
 )
-def test_update_messages_no_exception_raised(m1, m2, m3, m4, m5):
-    MemoryUpdateMessages(m1=m1, m2=m2, m3=m3, m4=m4, m5=m5)
+def test_update_messages_no_exception_raised(auth_key, m1, m2):
+    MemoryUpdateMessages(auth_key=auth_key, m1=m1, m2=m2)
 
 
 @mark.parametrize(
-    "m1, m2, m3, m4, m5, errortype",
+    "auth_key, m1, m2, errortype",
     (
-        # ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
+        # auth_key
+        ("00" * 18, "00" * 16, "00" * 32, ValueError),
+        ("000", "00" * 16, "00" * 32, ValueError),
+        ("ZZ", "00" * 16, "00" * 32, ValueError),
+        ("" * 18, "00" * 16, "00" * 32, ValueError),
+        (bytes(), "00" * 16, "00" * 32, ValueError),
+        (2.5, "00" * 16, "00" * 32, TypeError),
         # m1
-        ("00" * 18, "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("000", "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("ZZ", "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("", "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
-        (bytes(), "00" * 32, "00" * 16, "00" * 32, "00" * 16, ValueError),
-        (2.5, "00" * 32, "00" * 16, "00" * 32, "00" * 16, TypeError),
+        ("00" * 16, "00" * 18, "00" * 32, ValueError),
+        ("00" * 16, "000", "00" * 32, ValueError),
+        ("00" * 16, "ZZ", "00" * 32, ValueError),
+        ("00" * 16, "", "00" * 32, ValueError),
+        ("00" * 16, bytes(), "00" * 32, ValueError),
+        ("00" * 16, 2.5, "00" * 32, TypeError),
         # m2
-        ("00" * 16, "00" * 34, "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "000", "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "ZZ", "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "", "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, bytes(), "00" * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, 2.5, "00" * 16, "00" * 32, "00" * 16, TypeError),
-        # m3
-        ("00" * 16, "00" * 32, "00" * 18, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "000", "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "ZZ" * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "", "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, bytes() * 16, "00" * 32, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, 2.5, "00" * 32, "00" * 16, TypeError),
-        # m4
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 34, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "000", "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "ZZ", "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "", "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, bytes() * 32, "00" * 16, ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, 2.5, "00" * 16, TypeError),
-        # m5
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "00" * 18, ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "000", ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "ZZ", ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, "", ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, bytes(), ValueError),
-        ("00" * 16, "00" * 32, "00" * 16, "00" * 32, 2.5, TypeError),
+        ("00" * 16, "00" * 16, "00" * 34, ValueError),
+        ("00" * 16, "00" * 16, "000", ValueError),
+        ("00" * 16, "00" * 16, "ZZ", ValueError),
+        ("00" * 16, "00" * 16, "", ValueError),
+        ("00" * 16, "00" * 16, bytes(), ValueError),
+        ("00" * 16, "00" * 16, 2.5, TypeError),
     ),
 )
-def test_update_messages_raises(m1, m2, m3, m4, m5, errortype):
+def test_update_messages_raises(auth_key, m1, m2, errortype):
     with raises(errortype):
-        MemoryUpdateMessages(m1=m1, m2=m2, m3=m3, m4=m4, m5=m5)
+        MemoryUpdateMessages(auth_key, m1=m1, m2=m2)
