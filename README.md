@@ -9,7 +9,7 @@ Available features:
 
 ## Prerequisites
 
-With using Python 3.8, add .env `PYTHONPATH` to your environmental variabls. Add necessary libraries for your env:
+With using Python 3.8, add .env `PYTHONPATH` to your environmental variables. Add necessary libraries for your env:
 
 ```bash
 pip install -r requirements.txt
