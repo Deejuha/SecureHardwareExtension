@@ -3,7 +3,7 @@ Module to keep constants used within Secure Hardware Extension.
 
 """
 
-from datatypes import she_bytes
+from SecureHardwareExtension.datatypes import she_bytes
 
 __all__ = ["SheConstants"]
 

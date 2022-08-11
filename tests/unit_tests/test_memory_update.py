@@ -4,9 +4,14 @@ https://www.autosar.org/fileadmin/user_upload/standards/foundation/19-11/AUTOSAR
 
 """
 
-from datatypes import MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags, she_bytes
-from memory_update import MemoryUpdateProtocol
 from pytest import fixture, raises
+from SecureHardwareExtension.datatypes import (
+    MemoryUpdateInfo,
+    MemoryUpdateMessages,
+    SecurityFlags,
+    she_bytes,
+)
+from SecureHardwareExtension.memory_update import MemoryUpdateProtocol
 
 
 @fixture

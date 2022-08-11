@@ -20,9 +20,9 @@ pip install -r requirements.txt
 ### Calculate M1 - M5 messages by using update info
 
 ```py
-from datatypes import MemoryUpdateInfo, SecurityFlags
-from key_slots.autosar import AutosarKeySlots
-from memory_update import MemoryUpdateProtocol
+from SecureHardwareExtension.datatypes import MemoryUpdateInfo, SecurityFlags
+from SecureHardwareExtension.key_slots.autosar import AutosarKeySlots
+from SecureHardwareExtension.memory_update import MemoryUpdateProtocol
 update_info = MemoryUpdateInfo(
     new_key="0f0e0d0c0b0a09080706050403020100",  # Hex string or bytes
     auth_key="000102030405060708090a0b0c0d0e0f",  # Hex string or bytes
@@ -60,8 +60,8 @@ update_info = MemoryUpdateInfo(
 ### Get update info from M1 and M2 messages
 
 ```py
-from datatypes import MemoryUpdateMessages, she_bytes
-from memory_update import MemoryUpdateProtocol
+from SecureHardwareExtension.datatypes import MemoryUpdateMessages, she_bytes
+from SecureHardwareExtension.memory_update import MemoryUpdateProtocol
 messages = MemoryUpdateMessages(
     auth_key=she_bytes.fromhex("000102030405060708090a0b0c0d0e0f"),
     m1=she_bytes.fromhex("00000000000000000000000000000141"),

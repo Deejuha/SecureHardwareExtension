@@ -8,8 +8,10 @@ from typing import Union
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 
-from constants import SheConstants
-from datatypes import MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags, she_bytes
+from SecureHardwareExtension.constants import SheConstants
+from SecureHardwareExtension.datatypes import (MemoryUpdateInfo,
+                                               MemoryUpdateMessages,
+                                               SecurityFlags, she_bytes)
 
 __all__ = ["MemoryUpdateProtocol"]
 

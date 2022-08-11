@@ -1,6 +1,11 @@
-from datatypes import MemoryUpdateInfo, MemoryUpdateMessages, SecurityFlags, she_bytes
-from key_slots.autosar import AutosarKeySlots
 from pytest import fixture, mark, raises
+from SecureHardwareExtension.datatypes import (
+    MemoryUpdateInfo,
+    MemoryUpdateMessages,
+    SecurityFlags,
+    she_bytes,
+)
+from SecureHardwareExtension.key_slots.autosar import AutosarKeySlots
 
 
 @fixture

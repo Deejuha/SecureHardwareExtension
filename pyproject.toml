@@ -1,0 +1,17 @@
+[project]
+name = "SecureHardwareExtension"
+version = "v0.0.1"
+authors = [ {name="Michał Juszczyk", email="michaljuszczyk2@gmail.com"} ]
+description = "A set of tools for AUTOSAR Secure Hardware Extension"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Deejuha/SecureHardwareExtension"
+"Bug Tracker" = "https://github.com/Deejuha/SecureHardwareExtension/issues"
