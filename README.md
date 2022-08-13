@@ -1,5 +1,7 @@
 # Secure Hardware Extension
 
+![CICD](https://github.com/Deejuha/SecureHardwareExtension/workflows/python-test/badge.svg?branch=master)
+
 A set of tools for AUTOSAR Secure Hardware Extension.
 
 Available features:
