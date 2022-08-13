@@ -32,6 +32,7 @@ update_info = MemoryUpdateInfo(
     uid="00" * 14 + "01", # Hex string or bytes
     flags=SecurityFlags(),
 )
+procotol = MemoryUpdateProtocol(update_info)
 
 protocol.m1
 >>> b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01A'
@@ -82,8 +83,3 @@ update_protocol.update_info.new_key
 [NXP application note](https://www.nxp.com/docs/en/application-note/AN4234.pdf)
 
 [Vector SHE Key Update Protocol](https://support.vector.com/sys_attachment.do?sys_id=534d25eb87548590b9f233770cbb3550)
-
-## Somewhen in the future, depends on the repo stars quantity
-
-- Commandline interface
-- PyPi

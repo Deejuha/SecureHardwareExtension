@@ -10,7 +10,7 @@ __all__ = ["SheConstants"]
 
 class classproperty:
     """
-    Class helpful in order to hold constant values.
+    Class holds SHE constant values.
 
     """
 
