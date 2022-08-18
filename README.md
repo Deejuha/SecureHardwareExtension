@@ -11,10 +11,10 @@ Available features:
 
 ## Prerequisites
 
-With using Python 3.8, add .env `PYTHONPATH` to your environmental variables. Add necessary libraries for your env:
+With using Python 3.8, 3.9 or 3.10 install package to your environment.
 
 ```bash
-pip install -r requirements.txt
+pip install SecureHardwareExtension
 ```
 
 ## Examples
