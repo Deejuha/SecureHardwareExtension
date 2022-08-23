@@ -1,11 +1,11 @@
 from pytest import fixture, mark, raises
-from SecureHardwareExtension.datatypes import (
+from secure_hardware_extension.datatypes import (
     MemoryUpdateInfo,
     MemoryUpdateMessages,
     SecurityFlags,
     she_bytes,
 )
-from SecureHardwareExtension.key_slots.autosar import AutosarKeySlots
+from secure_hardware_extension.key_slots.autosar import AutosarKeySlots
 
 
 @fixture

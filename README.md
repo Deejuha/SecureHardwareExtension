@@ -14,7 +14,7 @@ Available features:
 With using Python 3.8, 3.9 or 3.10 install package to your environment.
 
 ```bash
-pip install SecureHardwareExtension
+pip install secure_hardware_extension
 ```
 
 ## Examples
@@ -22,9 +22,9 @@ pip install SecureHardwareExtension
 ### Calculate M1 - M5 messages by using update info
 
 ```py
-from SecureHardwareExtension.datatypes import MemoryUpdateInfo, SecurityFlags
-from SecureHardwareExtension.key_slots.autosar import AutosarKeySlots
-from SecureHardwareExtension.memory_update import MemoryUpdateProtocol
+from secure_hardware_extension.datatypes import MemoryUpdateInfo, SecurityFlags
+from secure_hardware_extension.key_slots.autosar import AutosarKeySlots
+from secure_hardware_extension.memory_update import MemoryUpdateProtocol
 update_info = MemoryUpdateInfo(
     new_key="0f0e0d0c0b0a09080706050403020100",  # Hex string or bytes
     auth_key="000102030405060708090a0b0c0d0e0f",  # Hex string or bytes
@@ -63,8 +63,8 @@ update_info = MemoryUpdateInfo(
 ### Get update info from M1 and M2 messages
 
 ```py
-from SecureHardwareExtension.datatypes import MemoryUpdateMessages, she_bytes
-from SecureHardwareExtension.memory_update import MemoryUpdateProtocol
+from secure_hardware_extension.datatypes import MemoryUpdateMessages, she_bytes
+from secure_hardware_extension.memory_update import MemoryUpdateProtocol
 messages = MemoryUpdateMessages(
     auth_key=she_bytes.fromhex("000102030405060708090a0b0c0d0e0f"),
     m1=she_bytes.fromhex("00000000000000000000000000000141"),

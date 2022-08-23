@@ -8,8 +8,8 @@ from typing import Union
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 
-from SecureHardwareExtension.constants import SheConstants
-from SecureHardwareExtension.datatypes import (MemoryUpdateInfo,
+from secure_hardware_extension.constants import SheConstants
+from secure_hardware_extension.datatypes import (MemoryUpdateInfo,
                                                MemoryUpdateMessages,
                                                SecurityFlags, she_bytes)
 

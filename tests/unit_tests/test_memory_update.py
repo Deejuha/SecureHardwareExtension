@@ -5,13 +5,13 @@ https://www.autosar.org/fileadmin/user_upload/standards/foundation/19-11/AUTOSAR
 """
 
 from pytest import fixture, raises
-from SecureHardwareExtension.datatypes import (
+from secure_hardware_extension.datatypes import (
     MemoryUpdateInfo,
     MemoryUpdateMessages,
     SecurityFlags,
     she_bytes,
 )
-from SecureHardwareExtension.memory_update import MemoryUpdateProtocol
+from secure_hardware_extension.memory_update import MemoryUpdateProtocol
 
 
 @fixture
