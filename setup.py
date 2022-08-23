@@ -11,7 +11,7 @@ readme = (root_directory / "README.md").read_text()
 
 setup(
     name="SecureHardwareExtension",
-    version="0.2.0",
+    version="1.0.0",
     install_requires=[
         "pycryptodome",
     ],
