@@ -2,7 +2,12 @@
 Wheel packager.
 
 """
+from pathlib import Path
+
 from setuptools import setup
+
+root_directory = Path(__file__).parent
+readme = (root_directory / "README.md").read_text()
 
 setup(
     name="secure_hardware_extension",
@@ -19,4 +24,6 @@ setup(
     ],
     description="A set of tools for AUTOSAR Secure Hardware Extension.",
     url="https://github.com/Deejuha/SecureHardwareExtension",
+    long_description=readme,
+    long_description_content_type="text/markdown",
 )
