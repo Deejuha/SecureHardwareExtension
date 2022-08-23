@@ -14,7 +14,7 @@ Available features:
 With using Python 3.8, 3.9 or 3.10 install package to your environment.
 
 ```bash
-pip install secure_hardware_extension
+pip install SecureHardwareExtension
 ```
 
 ## Examples

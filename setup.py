@@ -10,7 +10,7 @@ root_directory = Path(__file__).parent
 readme = (root_directory / "README.md").read_text()
 
 setup(
-    name="secure_hardware_extension",
+    name="SecureHardwareExtension",
     version="0.2.0",
     install_requires=[
         "pycryptodome",
