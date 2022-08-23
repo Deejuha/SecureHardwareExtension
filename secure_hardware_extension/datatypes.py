@@ -7,7 +7,7 @@ __all__ = ["MemoryUpdateInfo", "MemoryUpdateMessages", "SecurityFlags", "she_byt
 
 from typing import Optional, Union
 
-from SecureHardwareExtension.key_slots.base import KeySlots
+from secure_hardware_extension.key_slots.base import KeySlots
 
 BITS_IN_BYTE = 8
 HexType = Union[str, bytes]

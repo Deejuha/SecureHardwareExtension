@@ -3,7 +3,7 @@ This file contains AUTOSAR identification of memory slots.
 
 """
 
-from SecureHardwareExtension.key_slots.base import KeySlots
+from secure_hardware_extension.key_slots.base import KeySlots
 
 __all__ = ["AutosarKeySlots"]
 

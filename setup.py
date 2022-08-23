@@ -5,7 +5,7 @@ Wheel packager.
 from setuptools import setup
 
 setup(
-    name="SecureHardwareExtension",
+    name="secure_hardware_extension",
     version="0.2.0",
     install_requires=[
         "pycryptodome",
