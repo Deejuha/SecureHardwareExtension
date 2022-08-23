@@ -1,6 +1,7 @@
 # Secure Hardware Extension
 
 ![CICD](https://github.com/Deejuha/SecureHardwareExtension/workflows/python-test/badge.svg?branch=master)
+![Python](https://img.shields.io/pypi/pyversions/Django?style=plastic)
 
 A set of tools for AUTOSAR Secure Hardware Extension.
 
@@ -14,7 +15,7 @@ Available features:
 With using Python 3.8, 3.9 or 3.10 install package to your environment.
 
 ```bash
-pip install secure_hardware_extension
+pip install SecureHardwareExtension
 ```
 
 ## Examples
