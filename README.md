@@ -48,7 +48,7 @@ protocol.m2
 
 ```py
 flags = SecurityFlags()
-flags.boot_procetion = True
+flags.boot_protection = True
 update_info = MemoryUpdateInfo(
     ...
     flags=flags,
