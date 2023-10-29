@@ -3,9 +3,10 @@ This file contains base Enum of memory slots.
 
 """
 
+__all__ = ["KeySlots"]
+
 from enum import Enum
 
-__all__ = ["KeySlots"]
 
 
 class KeySlots(Enum):

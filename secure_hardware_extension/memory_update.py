@@ -3,6 +3,8 @@ Module contains Secure Hardware Extesion memory update protocol
 
 """
 
+__all__ = ["MemoryUpdateProtocol"]
+
 from typing import Union
 
 from Crypto.Cipher import AES
@@ -13,7 +15,6 @@ from secure_hardware_extension.datatypes import (MemoryUpdateInfo,
                                                MemoryUpdateMessages,
                                                SecurityFlags, she_bytes)
 
-__all__ = ["MemoryUpdateProtocol"]
 
 class MemoryUpdateProtocol:
     """

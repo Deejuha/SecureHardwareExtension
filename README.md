@@ -35,7 +35,7 @@ update_info = MemoryUpdateInfo(
     uid="00" * 14 + "01", # Hex string or bytes
     flags=SecurityFlags(),
 )
-procotol = MemoryUpdateProtocol(update_info)
+protocol = MemoryUpdateProtocol(update_info)
 
 protocol.m1
 >>> b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01A'

@@ -3,9 +3,10 @@ This file contains AUTOSAR identification of memory slots.
 
 """
 
+__all__ = ["AutosarKeySlots"]
+
 from secure_hardware_extension.key_slots.base import KeySlots
 
-__all__ = ["AutosarKeySlots"]
 
 
 class AutosarKeySlots(KeySlots):
