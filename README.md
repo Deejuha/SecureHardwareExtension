@@ -10,6 +10,10 @@ Available features:
 - Generate SHE Memory update protocol messages (M1 M2 M3 M4 M5).
 - Parse M1 M2 Memory update protocol messages in order to get the update information.
 
+## Disclaimer
+
+Vector's related specification specifies different layout of `flags` - it uses 5 flags instead of 6, described in AUTOSAR specs as this repo fully follows. Please adjust script accordingly then, I would be glad to some PR propositions if you have anything working. Enjoy!
+
 ## Prerequisites
 
 With using Python greater than 3.8 install package to your environment.
