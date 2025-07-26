@@ -135,7 +135,7 @@ class MemoryUpdateProtocol:
     @property
     def m2(self):
         cid = (self.update_info.counter & 0xFFFFFFF) << 100
-        fid = (self.update_info.fid & 0b111111) << 95
+        fid = (self.update_info.fid & 0b111111) << 94
         plain = (cid + fid).to_bytes(16, byteorder="big") + self.update_info.new_key
         return AES.new(self.k1, AES.MODE_CBC, iv=she_bytes.fromhex("00" * 16)).encrypt(
             plain
