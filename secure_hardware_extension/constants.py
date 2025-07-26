@@ -24,7 +24,7 @@ class classproperty:
 class SheConstants:
     """
     Class holds constants used within SHE.
-    https://www.autosar.org/fileadmin/user_upload/standards/foundation/19-11/AUTOSAR_TR_SecureHardwareExtensions.pdf
+    https://www.autosar.org/fileadmin/standards/R22-11/FO/AUTOSAR_TR_SecureHardwareExtensions.pdf
     4.12 Constants used with SHE.
 
     """

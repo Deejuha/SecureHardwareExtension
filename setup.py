@@ -11,7 +11,7 @@ readme = (root_directory / "README.md").read_text()
 
 setup(
     name="SecureHardwareExtension",
-    version="1.0.0",
+    version="1.0.1",
     install_requires=[
         "pycryptodome",
     ],
@@ -22,6 +22,9 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
