@@ -10,9 +10,13 @@ Available features:
 - Generate SHE Memory update protocol messages (M1 M2 M3 M4 M5).
 - Parse M1 M2 Memory update protocol messages in order to get the update information.
 
+## Disclaimer
+
+Vector's related specification specifies different layout of `flags` - it uses 5 flags instead of 6, described in AUTOSAR specs as this repo fully follows. Please adjust script accordingly then, I would be glad to some PR propositions if you have anything working. Enjoy!
+
 ## Prerequisites
 
-With using Python 3.8, 3.9 or 3.10 install package to your environment.
+With using Python greater than 3.8 install package to your environment.
 
 ```bash
 pip install SecureHardwareExtension
@@ -81,7 +85,9 @@ update_protocol.update_info.new_key
 
 ## Sources
 
-[Autosar specification](https://www.autosar.org/fileadmin/user_upload/standards/foundation/19-11/AUTOSAR_TR_SecureHardwareExtensions.pdf)
+Accessed 26.07.2025.
+
+[Autosar specification](https://www.autosar.org/fileadmin/standards/R22-11/FO/AUTOSAR_TR_SecureHardwareExtensions.pdf)
 
 [NXP application note](https://www.nxp.com/docs/en/application-note/AN4234.pdf)
 
